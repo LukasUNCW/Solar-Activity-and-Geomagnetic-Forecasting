@@ -2,8 +2,6 @@
 
 This project analyzes and forecasts three interrelated space weather time series using monthly data sourced from NOAA. We fit and compare three modeling approaches to evaluate which best captures the dynamics of solar activity and its effect on Earth's geomagnetic field.
 
----
-
 ## Datasets
 
 | Dataset | Description | Source |
@@ -13,8 +11,6 @@ This project analyzes and forecasts three interrelated space weather time series
 | **Geomagnetic Ap Index** | Daily/monthly measure of Earth's geomagnetic activity | NOAA / WDC Geomagnetism |
 
 All three datasets share the same monthly frequency and overlapping time period, and are physically related — solar output (sunspots, F10.7) drives geomagnetic disturbances (Ap Index).
-
----
 
 ## Methodology
 
@@ -36,8 +32,6 @@ All three series are modeled jointly using a vector ARIMA model (`sVARMA` in R),
 
 ### 4. Model Comparison
 All three approaches are compared on forecasting accuracy (test set) and in-sample fit (train set), with discussion of why results differ across methods.
-
----
 
 ## Repository Structure
 
