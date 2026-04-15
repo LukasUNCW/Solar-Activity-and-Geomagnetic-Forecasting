@@ -1,0 +1,12 @@
+{
+  "name": "R Environment",
+  "image": "rocker/rstudio:latest",
+  "forwardPorts": [8787],
+  "postCreateCommand": "R -e \"install.packages(c('tidyr', 'dplyr', 'forecast', 'tseries', 'MTS', 'ggplot2', 'fable', 'feasts', 'urca'))\"",
+  "portsAttributes": {
+    "8787": {
+      "label": "RStudio",
+      "onAutoForward": "openBrowser"
+    }
+  }
+}
