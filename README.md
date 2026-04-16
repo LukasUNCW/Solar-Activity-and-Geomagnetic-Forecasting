@@ -28,7 +28,7 @@ Each series is modeled independently using ARIMA or SARIMA. Steps include:
 All three series are modeled jointly using a vector ARIMA model (`sVARMA` in R), capturing cross-series dynamics. Includes overlaid plots of train, test, and forecasted values, along with train/test accuracy measures.
 
 ### 3. Dynamic Regression
-Ap Index is used as the response variable, with **Sunspot Number** and **F10.7** as covariates. A dynamic regression model is fit on the training set and used to forecast Ap Index values over the test period.
+Ap Index is used as the response variable, with Sunspot Number and F10.7 as covariates. A dynamic regression model is fit on the training set and used to forecast Ap Index values over the test period.
 
 ### 4. Model Comparison
 All three approaches are compared on forecasting accuracy (test set) and in-sample fit (train set), with discussion of why results differ across methods.
