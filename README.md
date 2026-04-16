@@ -33,16 +33,6 @@ Ap Index is used as the response variable, with Sunspot Number and F10.7 as cova
 ### 4. Model Comparison
 All three approaches are compared on forecasting accuracy (test set) and in-sample fit (train set), with discussion of why results differ across methods.
 
-## Requirements
-
-- R (≥ 4.0)
-- Packages: `forecast`, `tseries`, `MTS`, `ggplot2`, `fable`, `feasts`
-
-Install all packages with:
-```r
-install.packages(c("forecast", "tseries", "MTS", "ggplot2", "fable", "feasts"))
-```
-
 ## Data Sources
 
 - [WDC-SILSO Sunspot Number Data](https://www.sidc.be/silso/datafiles) — Royal Observatory of Belgium
