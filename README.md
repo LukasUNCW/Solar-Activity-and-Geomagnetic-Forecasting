@@ -46,8 +46,6 @@ solar-cycle-forecasting/
 └── README.md
 ```
 
----
-
 ## Requirements
 
 - R (≥ 4.0)
@@ -57,8 +55,6 @@ Install all packages with:
 ```r
 install.packages(c("forecast", "tseries", "MTS", "ggplot2", "fable", "feasts"))
 ```
-
----
 
 ## Data Sources
 
