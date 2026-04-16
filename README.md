@@ -10,7 +10,7 @@ This project analyzes and forecasts three interrelated space weather time series
 | Solar Flux (F10.7 Index) | Monthly 10.7cm solar radio flux | [NOAA Physical Sciences Laboratory](https://psl.noaa.gov/data/correlation/solar.csv) |
 | Geomagnetic Ap Index | Monthly averaged geomagnetic Ap index | [GFZ Potsdam Kp Index](https://kp.gfz.de/en/data) |
 
-All three datasets share the same monthly frequency and overlapping time period, and are physically related — solar output (sunspots, F10.7) drives geomagnetic disturbances (Ap Index).
+All three datasets share the same monthly frequency and overlapping time period, and are physically related, solar output (sunspots, F10.7) drives geomagnetic disturbances (Ap Index).
 
 ## Methodology
 
