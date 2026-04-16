@@ -1,4 +1,4 @@
-# Solar Activity & Geomagnetic Forecasting — Time Series Analysis STT-592
+# Solar Activity & Geomagnetic Forecasting - STT-592
 
 This project analyzes and forecasts three interrelated space weather time series using monthly data sourced from NOAA. We fit and compare three modeling approaches to evaluate which best captures the dynamics of solar activity and its effect on Earth's geomagnetic field.
 
