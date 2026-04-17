@@ -221,13 +221,147 @@ the model generalizes well to the test period. The Theil's U of 1.18 indicates p
 slightly worse than a naive forecast, which is reasonable given the inherent unpredictability
 of geomagnetic activity.
 
+# 2. Vector ARIMA Analysis
 
+## 2.1 Cross-Correlation Matrix (CCM)
 
+Before fitting a vector model, the cross-correlation matrix (CCM) was examined to assess
+whether the three series are meaningfully related across lags. The significance plot of the
+CCM shows p-values essentially equal to zero at every lag up to lag 24, far below the 0.05
+significance threshold. This confirms that all three series — Sunspot Number, F10.7, and
+Ap Index — are highly significantly cross-correlated with each other at every lag examined.
+This strong cross-series dependence justifies the use of a vector ARIMA model, as each
+series contains useful predictive information about the others.
 
+## 2.2 Model Selection
 
+VAR models of orders 1 through 4 were fitted to the combined training set matrix and
+compared using AIC:
 
+| Model | AIC |
+|---|---|
+| VAR(1) | 18.075 |
+| VAR(2) | 17.995 |
+| VAR(3) | 17.951 |
+| VAR(4) | **17.913** |
 
+The VAR(4) model produced the lowest AIC of 17.913 and was selected as the final model.
+This means each series is modeled as a linear function of its own four most recent lags and
+the four most recent lags of the other two series — 12 predictors per equation in total.
 
+## 2.3 Final Model
+
+The VAR(4) model includes three equations, one for each series. The AR coefficient matrices
+show that past values of Sunspot Number and F10.7 have meaningful cross-predictive effects
+on each other, while the Ap Index is primarily driven by its own past values with smaller
+contributions from the solar activity series. The residual covariance matrix confirms strong
+positive correlation between the Sunspot and F10.7 residuals (2583), as expected given their
+shared physical origin, while Ap residuals are less correlated with the other two series.
+
+## 2.4 Forecasts
+
+The forecast overlay plot shows the training series (colored), test set (black), and VAR(4)
+forecasts (red dashed) for all three series. For both Sunspot and F10.7, the test period
+coincides with the rising phase of Solar Cycle 25, which saw a faster and stronger recovery
+than anticipated. The VAR forecasts follow a gradual upward trend but significantly
+underestimate the magnitude of this recovery, particularly for F10.7. For the Ap Index, the
+VAR forecast predicts a slow steady increase but misses the short-term variability present
+in the actual test series.
+
+## 2.5 Accuracy Measures
+
+### Test Set Accuracy
+
+| Series | RMSE | MAE | MAPE |
+|---|---|---|---|
+| Sunspot | 48.48 | 37.95 | 1020.11% |
+| F10.7 | 421.58 | 298.66 | 21.72% |
+| Ap Index | 4.17 | 3.52 | 57.65% |
+
+The VAR model outperforms the univariate model for both Sunspot (RMSE 48.48 vs 91.37)
+and F10.7 (RMSE 421.58 vs 647.65), suggesting that cross-series information improves
+forecasting for the solar activity variables. For the Ap Index, the VAR model performs
+slightly worse than the univariate model (RMSE 4.17 vs 3.54), indicating that the added
+complexity of the vector model does not benefit Ap forecasting as much as modeling it
+individually or with a dynamic regression approach.
+
+The extremely high MAPE for Sunspot (1020%) is again due to near-zero values during
+solar minimum at the start of the test period — RMSE and MAE are more appropriate
+measures for this series.
+
+---
+
+# 3. Dynamic Regression Analysis
+
+## 3.1 Model Setup
+
+The dynamic regression model uses **Ap Index as the response variable** and
+**Sunspot Number and F10.7 as covariates**. This choice reflects the known physical
+causal structure — solar activity (measured by sunspots and F10.7) directly drives
+geomagnetic disturbances (measured by Ap). The model was fit using `auto.arima` with
+the `xreg` argument on the training set, allowing the error structure to be modeled
+as an ARIMA process after accounting for the linear effect of the covariates.
+
+## 3.2 Model Selection
+
+Candidate models were compared by fitting ARIMA error structures of various orders with
+the two covariates included. The best model selected by `auto.arima` was:
+
+**Regression with ARIMA(1,1,2)(2,0,0)[12] errors**
+
+- AIC: 3805.45
+
+This model improves on the univariate Ap ARIMA model (AIC: 3830.16) by 24.71 AIC points,
+confirming that the solar activity covariates provide meaningful additional explanatory power
+beyond what the ARIMA error structure alone can capture.
+
+## 3.3 Final Model
+
+The fitted model equation is:
+
+$$\text{Ap}_t = -0.0081 \cdot \text{Sunspot}_t + 0.0052 \cdot \text{F10.7}_t + \eta_t$$
+
+where $\eta_t$ follows an ARIMA(1,1,2)(2,0,0)[12] process:
+
+$$\eta_t = 0.8144\eta_{t-1} - 1.4485\varepsilon_{t-1} + 0.4551\varepsilon_{t-2} + 0.1288\eta_{t-12} + 0.1369\eta_{t-24}$$
+
+The coefficient on F10.7 (0.0052) is positive, indicating that higher solar flux is
+associated with higher geomagnetic activity, which is physically consistent. The negative
+coefficient on Sunspot (-0.0081) may reflect the high multicollinearity between Sunspot and
+F10.7 — since both measure solar activity, their individual coefficients can be difficult
+to interpret in isolation. The seasonal AR terms at lags 12 and 24 capture the annual
+periodicity in geomagnetic activity.
+
+## 3.4 Forecasts
+
+The dynamic regression forecast plot shows the full training series (black), the forecast
+and fitted values (blue), the actual test values (red), and the 80% and 95% prediction
+intervals (shaded). The forecast tracks the general level of the test period reasonably
+well, with the actual Ap values mostly falling within or near the prediction intervals.
+The model correctly captures the modest increase in geomagnetic activity during Solar
+Cycle 25, driven by the rising Sunspot and F10.7 values provided as covariates in the
+test set. This is a key advantage of dynamic regression — the model can leverage the
+known covariate values to produce more informed forecasts.
+
+## 3.5 Accuracy Measures
+
+### Test Set Accuracy
+
+| Set | RMSE | MAE | MAPE |
+|---|---|---|---|
+| Test | 3.29 | 2.72 | 43.44% |
+
+### Train Set Accuracy
+
+| Set | RMSE | MAE | MAPE |
+|---|---|---|---|
+| Training | 4.34 | 3.12 | 26.40% |
+
+The dynamic regression model achieves the lowest test RMSE (3.29) of all three methods
+applied to the Ap Index, outperforming both the univariate ARIMA (RMSE 3.54) and the
+VAR model (RMSE 4.17). The training RMSE of 4.34 is also the lowest among methods for
+this series, confirming that the covariates improve both in-sample fit and out-of-sample
+forecasting for the Ap Index.
 
 # 4. Model Comparison
 
