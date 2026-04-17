@@ -33,33 +33,6 @@ All three series are modeled jointly using a vector ARIMA model (`sVARMA` in R),
 ### 4. Model Comparison
 All three approaches are compared on forecasting accuracy (test set) and in-sample fit (train set), with discussion of why results differ across methods.
 
-## Repository Structure
-
-```
-solar-cycle-forecasting/
-├── data/               # Raw and cleaned datasets
-├── R/                  # R scripts for each modeling step
-│   ├── 01_univariate.R
-│   ├── 02_varima.R
-│   └── 03_dynamic_regression.R
-├── output/             # Plots and results
-└── README.md
-```
-
----
-
-## Requirements
-
-- R (≥ 4.0)
-- Packages: `forecast`, `tseries`, `MTS`, `ggplot2`, `fable`, `feasts`
-
-Install all packages with:
-```r
-install.packages(c("forecast", "tseries", "MTS", "ggplot2", "fable", "feasts"))
-```
-
----
-
 ## Data Sources
 
 - [NOAA Space Weather](https://www.ngdc.noaa.gov/stp/space-weather/solar-data/)
