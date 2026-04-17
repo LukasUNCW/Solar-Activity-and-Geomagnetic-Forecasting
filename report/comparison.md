@@ -30,22 +30,22 @@ The table below summarizes the forecasting accuracy for each method on the held-
 
 The results are mixed across the three series, and no single method dominates uniformly.
 
-For **Sunspot Number**, the Vector ARIMA model produced noticeably better point forecasts
+For Sunspot Number, the Vector ARIMA model produced noticeably better point forecasts
 than the univariate model (RMSE of 48.48 vs 88.39, MAE of 37.95 vs 64.15), suggesting that
 incorporating information from the correlated F10.7 and Ap series helped the VAR model track
 the test period more closely. The MAPE for Sunspot is extremely high across both methods
 (121% univariate, 1020% VAR), which reflects the fact that sunspot counts pass through near-zero
-values during solar minimum — making percentage errors artificially large and not a reliable
+values during solar minimum, making percentage errors artificially large and not a reliable
 measure of forecast quality for this series. RMSE and MAE are more appropriate here.
 
-For **F10.7 Solar Flux**, the VAR model also outperformed the univariate model in terms of
+For F10.7 Solar Flux, the VAR model also outperformed the univariate model in terms of
 RMSE (421.58 vs 654.68) and MAE (298.66 vs 465.05), again indicating that cross-series
 information improved forecasting. The MAPE of 21.72% for VAR vs 31.79% for univariate
 further supports this conclusion.
 
-For **Ap Index**, the Dynamic Regression model produced the best forecasts, with the lowest
+For Ap Index, the Dynamic Regression model produced the best forecasts, with the lowest
 RMSE (3.15) and MAE (2.50) among all methods tested for this series. This is not surprising
-given the physical relationship between the variables — Sunspot Number and F10.7 are direct
+given the physical relationship between the variables, Sunspot Number and F10.7 are direct
 measures of solar output and are strong predictors of geomagnetic activity. By explicitly
 incorporating these as covariates, the dynamic regression model was able to leverage this
 causal structure in a way that neither the univariate model nor the VAR model could replicate
