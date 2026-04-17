@@ -368,7 +368,7 @@ forecasting for the Ap Index.
 ## 4.1 Forecasting Accuracy (Test Set)
 
 The table below summarizes the forecasting accuracy for each method on the held-out test set
-(October 2018 – October 2024, 73 observations).
+(December 2018 – December 2024, 73 observations).
 
 | Method | Series | RMSE | MAE | MAPE |
 |---|---|---|---|---|
