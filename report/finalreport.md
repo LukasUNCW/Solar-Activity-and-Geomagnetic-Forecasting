@@ -1,3 +1,12 @@
+# Solar Activity & Geomagnetic Forecasting — Final Report
+
+**Course:** Time Series Analysis  
+**Dataset Period:** January 1964 – December 2024  
+**Training Set:** January 1964 – November 2018 (659 observations)  
+**Test Set:** December 2018 – December 2024 (73 observations)
+
+---
+
 # 1. Univariate Time Series Analysis
 
 ## Data Overview
@@ -12,6 +21,8 @@ The training set consists of 659 monthly observations spanning January 1964 to N
 
 ### Time Series Plot
 
+![Sunspot Time Series](../output/Sunspot_tsplot.png)
+
 The Sunspot Number time series exhibits a clear and repeating cyclical pattern consistent
 with the well-known 11-year solar cycle. The series oscillates between near-zero values
 during solar minimum and peaks exceeding 250 during solar maximum. Notable peaks are
@@ -20,6 +31,8 @@ is clearly non-stationary due to this long-period cyclical behavior, and varianc
 roughly constant across the series.
 
 ### ACF and PACF
+
+![Sunspot ACF and PACF](../output/Sunspot_acf_pacf.png)
 
 The ACF decays very slowly and remains significant across many lags, indicating strong
 positive autocorrelation and confirming that the series is non-stationary. The slow sinusoidal
@@ -66,6 +79,12 @@ The Ljung-Box test on the residuals returned a p-value of 0.3036, indicating no 
 autocorrelation remaining in the residuals. The residual plot shows approximately white noise
 behavior, confirming the model adequately captures the structure in the data.
 
+![Sunspot Residual Diagnostics](../output/Sunspot_diagnostics.png)
+
+### Forecasts
+
+![Sunspot Forecast](../output/Sunspot_forecast.png)
+
 ### Accuracy Measures
 
 | Set | RMSE | MAE | MAPE |
@@ -83,6 +102,8 @@ approaches zero. RMSE and MAE are more informative here.
 
 ### Time Series Plot
 
+![F10.7 Time Series](../output/F107_tsplot.png)
+
 The F10.7 Solar Flux series closely mirrors the Sunspot Number, exhibiting the same 11-year
 cyclical pattern. Values range from approximately 700 sfu at solar minimum to over 2400 sfu
 at solar maximum. The series is non-stationary with a strong periodic structure. The cycles
@@ -90,6 +111,8 @@ follow the same timing as sunspots, which is expected given the physical relatio
 these two measures of solar activity.
 
 ### ACF and PACF
+
+![F10.7 ACF and PACF](../output/F107_acf_pacf.png)
 
 Similar to the Sunspot series, the ACF of F10.7 shows a very slow decay with significant
 autocorrelations persisting across all 48 lags shown, confirming non-stationarity. A gradual
@@ -134,6 +157,12 @@ remaining autocorrelation in the residuals. This indicates the model does not fu
 all structure in the F10.7 series, likely due to the long solar cycle period being difficult
 to model with a simple ARIMA structure.
 
+![F10.7 Residual Diagnostics](../output/F107_diagnostics.png)
+
+### Forecasts
+
+![F10.7 Forecast](../output/F107_forecast.png)
+
 ### Accuracy Measures
 
 | Set | RMSE | MAE | MAPE |
@@ -151,6 +180,8 @@ of 4.68 confirms the model performs worse than a naive forecast over the test pe
 
 ### Time Series Plot
 
+![Ap Index Time Series](../output/Ap_Index_tsplot.png)
+
 The Ap Index series behaves quite differently from the Sunspot and F10.7 series. While there
 is a general tendency for elevated activity during solar maximum periods, the series is much
 noisier with frequent large spikes. The most notable spike occurs around 1989-1991, coinciding
@@ -159,6 +190,8 @@ corresponding to the unusually deep solar minimum between cycles 23 and 24. Over
 appears more stationary than Sunspot or F10.7, with no clear long-term trend.
 
 ### ACF and PACF
+
+![Ap Index ACF and PACF](../output/Ap_Index_acf_pacf.png)
 
 The ACF of the Ap Index decays much more rapidly than the solar activity series, dropping
 below the significance threshold within approximately 10 lags. However, a persistent low-level
@@ -209,6 +242,12 @@ The Ljung-Box test returned a p-value of 0.0038, indicating some remaining autoc
 in the residuals. Despite this, the model provides a reasonable fit and its AIC is
 substantially lower than all non-seasonal alternatives.
 
+![Ap Index Residual Diagnostics](../output/Ap_Index_diagnostics.png)
+
+### Forecasts
+
+![Ap Index Forecast](../output/Ap_Index_forecast.png)
+
 ### Accuracy Measures
 
 | Set | RMSE | MAE | MAPE |
@@ -221,9 +260,13 @@ the model generalizes well to the test period. The Theil's U of 1.18 indicates p
 slightly worse than a naive forecast, which is reasonable given the inherent unpredictability
 of geomagnetic activity.
 
+---
+
 # 2. Vector ARIMA Analysis
 
 ## 2.1 Cross-Correlation Matrix (CCM)
+
+![VAR CCM Significance Plot](../output/varima_ccm.png)
 
 Before fitting a vector model, the cross-correlation matrix (CCM) was examined to assess
 whether the three series are meaningfully related across lags. The significance plot of the
@@ -258,7 +301,11 @@ contributions from the solar activity series. The residual covariance matrix con
 positive correlation between the Sunspot and F10.7 residuals (2583), as expected given their
 shared physical origin, while Ap residuals are less correlated with the other two series.
 
+![VAR Diagnostics](../output/varima_diagnostics.png)
+
 ## 2.4 Forecasts
+
+![VAR Forecast Overlay](../output/varima_forecast_overlay.png)
 
 The forecast overlay plot shows the training series (colored), test set (black), and VAR(4)
 forecasts (red dashed) for all three series. For both Sunspot and F10.7, the test period
@@ -332,7 +379,11 @@ F10.7 — since both measure solar activity, their individual coefficients can b
 to interpret in isolation. The seasonal AR terms at lags 12 and 24 capture the annual
 periodicity in geomagnetic activity.
 
+![Dynamic Regression Diagnostics](../output/dynreg_diagnostics.png)
+
 ## 3.4 Forecasts
+
+![Dynamic Regression Forecast](../output/dynreg_forecast_overlay.png)
 
 The dynamic regression forecast plot shows the full training series (black), the forecast
 and fitted values (blue), the actual test values (red), and the 80% and 95% prediction
@@ -363,6 +414,8 @@ VAR model (RMSE 4.17). The training RMSE of 4.34 is also the lowest among method
 this series, confirming that the covariates improve both in-sample fit and out-of-sample
 forecasting for the Ap Index.
 
+---
+
 # 4. Model Comparison
 
 ## 4.1 Forecasting Accuracy (Test Set)
@@ -378,7 +431,7 @@ The table below summarizes the forecasting accuracy for each method on the held-
 | Vector ARIMA (VAR) | Sunspot | 48.48 | 37.95 | 1020.11% |
 | Vector ARIMA (VAR) | F10.7 | 421.58 | 298.66 | 21.72% |
 | Vector ARIMA (VAR) | Ap Index | 4.17 | 3.52 | 57.65% |
-| Dynamic Regression | Ap Index | 3.15 | 2.50 | 40.10% |
+| Dynamic Regression | Ap Index | 3.29 | 2.72 | 43.44% |
 
 ## 4.2 In-Sample Fit Accuracy (Train Set)
 
@@ -409,7 +462,7 @@ information improved forecasting. The MAPE of 21.72% for VAR vs 31.79% for univa
 further supports this conclusion.
 
 For **Ap Index**, the Dynamic Regression model produced the best forecasts, with the lowest
-RMSE (3.15) and MAE (2.50) among all methods tested for this series. This is not surprising
+RMSE (3.29) and MAE (2.72) among all methods tested for this series. This is not surprising
 given the physical relationship between the variables — Sunspot Number and F10.7 are direct
 measures of solar output and are strong predictors of geomagnetic activity. By explicitly
 incorporating these as covariates, the dynamic regression model was able to leverage this
