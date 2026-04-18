@@ -1,8 +1,3 @@
-# ============================================================
-# 03_varima.R
-# Vector ARIMA (sVARMA) modeling for all three series jointly
-# ============================================================
-
 .libPaths('~/R/library')
 
 library(tidyr)
@@ -13,9 +8,6 @@ library(ggplot2)
 
 dir.create("output", showWarnings = FALSE)
 
-# ------------------------------------------------------------
-# Load cleaned data
-# ------------------------------------------------------------
 solar_data <- read.csv("data/solar_data_clean.csv")
 solar_data$date <- as.Date(solar_data$date)
 
@@ -35,15 +27,11 @@ cat("Training set:", n_train, "obs |", as.character(train$date[1]),
 cat("Test set:    ", n_test,  "obs |", as.character(test$date[1]),
     "to", as.character(test$date[n_test]), "\n\n")
 
-# ------------------------------------------------------------
-# Build multivariate matrix (train and test)
-# ------------------------------------------------------------
+
 train_mat <- as.matrix(train[, c("sunspot", "f107", "ap")])
 test_mat  <- as.matrix(test[,  c("sunspot", "f107", "ap")])
 
-# ------------------------------------------------------------
-# 1. Plot all three training series together
-# ------------------------------------------------------------
+
 png("output/varima_train_series.png", width = 900, height = 600)
 par(mfrow = c(3, 1), mar = c(3, 4, 2, 1))
 plot(train$date, train$sunspot, type = "l", col = "steelblue",
@@ -55,18 +43,14 @@ plot(train$date, train$ap, type = "l", col = "darkgreen",
 dev.off()
 cat(">> Training series plot saved\n")
 
-# ------------------------------------------------------------
-# 2. Cross-correlation matrix (CCM)
-# ------------------------------------------------------------
+
 cat("\n--- Cross-Correlation Matrix ---\n")
 png("output/varima_ccm.png", width = 900, height = 700)
 ccm(train_mat, lag = 24)
 dev.off()
 cat(">> CCM plot saved\n")
 
-# ------------------------------------------------------------
-# 3. Fit sVARMA model
-# ------------------------------------------------------------
+
 cat("\n--- Fitting sVARMA model ---\n")
 
 # Try VAR orders 1 through 4 and pick best AIC
@@ -89,18 +73,14 @@ for (p in 1:4) {
 
 cat("\nBest model: VAR(", best_p, ") with AIC:", round(best_aic, 2), "\n")
 
-# ------------------------------------------------------------
-# 4. Model diagnostics
-# ------------------------------------------------------------
+
 cat("\n--- Residual Diagnostics ---\n")
 png("output/varima_diagnostics.png", width = 900, height = 700)
 MTSdiag(best_model)
 dev.off()
 cat(">> Diagnostics plot saved\n")
 
-# ------------------------------------------------------------
-# 5. Forecasts for test set
-# ------------------------------------------------------------
+
 cat("\n--- Forecasting test set ---\n")
 h  <- nrow(test_mat)
 fc <- VARpred(best_model, h = h)
@@ -109,9 +89,7 @@ fc_sunspot <- fc$pred[, 1]
 fc_f107    <- fc$pred[, 2]
 fc_ap      <- fc$pred[, 3]
 
-# ------------------------------------------------------------
-# 6. Overlay plot: train + test + forecast
-# ------------------------------------------------------------
+           
 all_dates   <- solar_data$date
 train_dates <- train$date
 test_dates  <- test$date
@@ -152,9 +130,7 @@ legend("topleft", legend = c("Train", "Test", "Forecast"),
 dev.off()
 cat(">> Forecast overlay plot saved\n")
 
-# ------------------------------------------------------------
-# 7. Accuracy measures
-# ------------------------------------------------------------
+
 accuracy_measures <- function(actual, forecast, label) {
   e    <- actual - forecast
   mae  <- mean(abs(e), na.rm = TRUE)
