@@ -43,6 +43,8 @@ Ap Index is used as the response variable, with Sunspot Number and F10.7 as cova
 ### 4. Model Comparison
 All three approaches are compared on forecasting accuracy (test set) and in-sample fit (train set), with discussion of why results differ across methods.
 
+See [report/finalreport.md](report/finalreport.md) for the full written report including all plots, model equations, and results.
+
 ## Data Sources
 
 - [WDC-SILSO Sunspot Number Data](https://www.sidc.be/silso/datafiles) — Royal Observatory of Belgium
