@@ -1,12 +1,5 @@
 # Solar Activity & Geomagnetic Forecasting — Final Report
 
-**Course:** Time Series Analysis  
-**Dataset Period:** January 1964 – December 2024  
-**Training Set:** January 1964 – November 2018 (659 observations)  
-**Test Set:** December 2018 – December 2024 (73 observations)
-
----
-
 # 1. Univariate Time Series Analysis
 
 ## Data Overview
