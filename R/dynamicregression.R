@@ -1,10 +1,3 @@
-# ============================================================
-# 04_dynamicregression.R
-# Dynamic Regression model
-# Response:   Ap Index
-# Covariates: Sunspot Number, F10.7
-# ============================================================
-
 .libPaths('~/R/library')
 
 library(tidyr)
@@ -16,9 +9,6 @@ library(ggplot2)
 
 dir.create("output", showWarnings = FALSE)
 
-# ------------------------------------------------------------
-# Load cleaned data
-# ------------------------------------------------------------
 solar_data <- read.csv("data/solar_data_clean.csv")
 solar_data$date <- as.Date(solar_data$date)
 
@@ -38,9 +28,7 @@ cat("Training set:", n_train, "obs |", as.character(train$date[1]),
 cat("Test set:    ", n_test,  "obs |", as.character(test$date[1]),
     "to", as.character(test$date[n_test]), "\n\n")
 
-# ------------------------------------------------------------
-# Build ts objects
-# ------------------------------------------------------------
+
 start_yr <- train$year[1]
 start_mo <- train$month[1]
 
@@ -54,9 +42,6 @@ xreg_train <- cbind(sunspot = train$sunspot, f107 = train$f107)
 # Covariate matrix for test (used for forecasting)
 xreg_test  <- cbind(sunspot = test$sunspot,  f107 = test$f107)
 
-# ------------------------------------------------------------
-# 1. Plot response and covariates
-# ------------------------------------------------------------
 png("output/dynreg_series.png", width = 900, height = 600)
 par(mfrow = c(3, 1), mar = c(3, 4, 2, 1))
 plot(train$date, train$ap,      type = "l", col = "darkgreen",
@@ -68,9 +53,7 @@ plot(train$date, train$f107,    type = "l", col = "darkorange",
 dev.off()
 cat(">> Series plot saved\n")
 
-# ------------------------------------------------------------
-# 2. Fit dynamic regression using auto.arima with xreg
-# ------------------------------------------------------------
+
 cat("\n--- Fitting Dynamic Regression (auto.arima with xreg) ---\n")
 
 auto_dynreg <- auto.arima(ts_ap,
@@ -86,9 +69,6 @@ cat("\nAIC:", round(AIC(auto_dynreg), 2), "\n")
 cat("\nCoefficients:\n")
 print(coef(auto_dynreg))
 
-# ------------------------------------------------------------
-# 3. Compare candidate models by AIC
-# ------------------------------------------------------------
 cat("\n--- Candidate Model AIC Comparison ---\n")
 
 orders_to_try <- list(
@@ -113,24 +93,17 @@ print(aic_results)
 # Use auto.arima model as final
 final_model <- auto_dynreg
 
-# ------------------------------------------------------------
-# 4. Residual diagnostics
-# ------------------------------------------------------------
 png("output/dynreg_diagnostics.png", width = 900, height = 600)
 checkresiduals(final_model)
 dev.off()
 cat("\n>> Residual diagnostics plot saved\n")
 
-# ------------------------------------------------------------
-# 5. Forecasts using test set covariates
-# ------------------------------------------------------------
+
 cat("\n--- Forecasting Ap Index using test set covariates ---\n")
 
 fc <- forecast(final_model, xreg = xreg_test, h = nrow(test))
 
-# ------------------------------------------------------------
-# 6. Overlay plot: train + test + forecast
-# ------------------------------------------------------------
+
 all_dates   <- solar_data$date
 train_dates <- train$date
 test_dates  <- test$date
@@ -152,9 +125,7 @@ legend("topleft",
 dev.off()
 cat(">> Forecast overlay plot saved\n")
 
-# ------------------------------------------------------------
-# 7. Accuracy measures
-# ------------------------------------------------------------
+
 cat("\n--- Accuracy: Test Set (Forecast vs Actual) ---\n")
 acc_test <- accuracy(fc, ts_ap_test)
 print(round(acc_test, 4))
@@ -163,9 +134,7 @@ cat("\n--- Accuracy: Train Set (Fitted vs Actual) ---\n")
 acc_train <- accuracy(final_model)
 print(round(acc_train, 4))
 
-# ------------------------------------------------------------
-# 8. Print fitted model equation summary
-# ------------------------------------------------------------
+
 cat("\n--- Model Summary ---\n")
 cat("Dynamic Regression: Ap Index ~ Sunspot + F10.7 + ARIMA errors\n")
 cat("ARIMA order on residuals:", arimaorder(final_model), "\n")
