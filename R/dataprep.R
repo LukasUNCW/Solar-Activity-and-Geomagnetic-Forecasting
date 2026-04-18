@@ -1,14 +1,6 @@
-# ============================================================
-# 01_data_prep.R
-# Load, clean, and merge the three solar/geomagnetic datasets
-# ============================================================
-
 library(tidyr)
 library(dplyr)
 
-# ------------------------------------------------------------
-# 1. Sunspot Number (SILSO monthly mean)
-# ------------------------------------------------------------
 sunspot <- read.csv("data/SN_m_tot_V2_0.csv", sep = ";", header = FALSE)
 colnames(sunspot) <- c("year", "month", "decimal_date", "sunspot", "sd", "n_obs", "quality")
 
@@ -20,9 +12,6 @@ sunspot <- sunspot %>%
   select(year, month, sunspot) %>%
   filter(year >= 1964, year <= 2024)
 
-# ------------------------------------------------------------
-# 2. Solar Flux F10.7 (NOAA PSL monthly)
-# ------------------------------------------------------------
 f107 <- read.csv("data/solar.csv", skip = 1, header = FALSE)
 colnames(f107) <- c("date", "f107")
 
@@ -38,9 +27,6 @@ f107 <- f107 %>%
   select(year, month, f107) %>%
   filter(year >= 1964, year <= 2024)
 
-# ------------------------------------------------------------
-# 3. Geomagnetic Ap Index (GFZ Potsdam monthly)
-# ------------------------------------------------------------
 ap_raw <- read.table("data/ap_monthly.txt", header = FALSE, fill = TRUE)
 colnames(ap_raw) <- c("label", "year", "jan", "feb", "mar", "apr", "may",
                       "jun", "jul", "aug", "sep", "oct", "nov", "dec", "annual")
@@ -57,9 +43,6 @@ ap_long <- ap_raw %>%
 # Replace any missing/placeholder values with NA
 ap_long$ap[ap_long$ap <= 0] <- NA
 
-# ------------------------------------------------------------
-# 4. Merge all three into one data frame
-# ------------------------------------------------------------
 solar_data <- sunspot %>%
   inner_join(f107,    by = c("year", "month")) %>%
   inner_join(ap_long, by = c("year", "month")) %>%
@@ -72,9 +55,6 @@ solar_data$date <- as.Date(paste(solar_data$year, solar_data$month, "01", sep = 
 solar_data <- solar_data %>%
   select(date, year, month, sunspot, f107, ap)
 
-# ------------------------------------------------------------
-# 5. Split into train and test sets (hold out last 10%)
-# ------------------------------------------------------------
 n <- nrow(solar_data)
 n_test  <- floor(n * 0.10)
 n_train <- n - n_test
@@ -86,9 +66,6 @@ cat("Total observations:", n, "\n")
 cat("Training set:      ", n_train, "obs (", train$date[1], "to", train$date[n_train], ")\n")
 cat("Test set:          ", n_test,  "obs (", test$date[1],  "to", test$date[n_test],  ")\n")
 
-# ------------------------------------------------------------
-# 6. Convert to time series objects for modeling
-# ------------------------------------------------------------
 start_year  <- train$year[1]
 start_month <- train$month[1]
 
@@ -96,9 +73,6 @@ ts_sunspot <- ts(train$sunspot, start = c(start_year, start_month), frequency = 
 ts_f107    <- ts(train$f107,    start = c(start_year, start_month), frequency = 12)
 ts_ap      <- ts(train$ap,      start = c(start_year, start_month), frequency = 12)
 
-# ------------------------------------------------------------
-# 7. Quick summary check
-# ------------------------------------------------------------
 cat("\n--- Summary of merged dataset ---\n")
 print(summary(solar_data[, c("sunspot", "f107", "ap")]))
 
