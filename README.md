@@ -7,7 +7,8 @@ The sun is not constant, it goes through a repeating cycle of activity roughly e
 
 This cycle has measurable effects all the way out to Earth: 
 - Sunspots are dark, cooler patches on the Sun's surface caused by concentrated magnetic fields. Scientists have been counting them since the 1700s, making it one of the longest continuous records in all of science. More sunspots = more solar activity.
-- Solar Flux (F10.7 Index) measures the amount of radio energy the Sun emits 
+- Solar Flux (F10.7 Index) measures the amount of radio energy the Sun emits at a wavelength of 10.7 cm. It's recorded daily at an obvservatory in Penticton, British Columbia, and tracks solar activity extremely closely, it is ofted used as a direct proxy for sunspot number. Unlike physically counting sunspots, it can be measured automatically in any weather.
+- Geomagnetic Ap Index measures how disturbed Earth's magnetic field is on a given day, caused by charged particles streaming out from the Sun (the "solar wind") interacting with Earth's magnetosphere. When the Sun is active, these disturbances are stronger. Severe geomagnetic storms can disrupt GPS, power grids, satellites, and radio communications.
 
 ## Datasets
 
