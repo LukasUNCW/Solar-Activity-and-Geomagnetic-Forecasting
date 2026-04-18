@@ -10,6 +10,8 @@ This cycle has measurable effects all the way out to Earth:
 - Solar Flux (F10.7 Index) measures the amount of radio energy the Sun emits at a wavelength of 10.7 cm. It's recorded daily at an obvservatory in Penticton, British Columbia, and tracks solar activity extremely closely, it is ofted used as a direct proxy for sunspot number. Unlike physically counting sunspots, it can be measured automatically in any weather.
 - Geomagnetic Ap Index measures how disturbed Earth's magnetic field is on a given day, caused by charged particles streaming out from the Sun (the "solar wind") interacting with Earth's magnetosphere. When the Sun is active, these disturbances are stronger. Severe geomagnetic storms can disrupt GPS, power grids, satellites, and radio communications.
 
+These three variables are deeply connected: sunspot activity drives solar flux, solar flux drives the solar wind, and the solar wind drives geomagnetic disturbances. This chain of cause and effect makes them an ideal set of time series to model together — and to test whether knowing about upstream solar activity helps predict downstream geomagnetic behavior.
+
 ## Datasets
 
 | Dataset | Description | Source |
