@@ -1,8 +1,3 @@
-# ============================================================
-# 02_univariate.R
-# Univariate ARIMA/SARIMA modeling for each time series
-# ============================================================
-
 .libPaths('~/R/library')
 
 library(tidyr)
@@ -15,9 +10,6 @@ library(ggplot2)
 # Create output directory for plots
 dir.create("output", showWarnings = FALSE)
 
-# ------------------------------------------------------------
-# Load cleaned data
-# ------------------------------------------------------------
 solar_data <- read.csv("data/solar_data_clean.csv")
 solar_data$date <- as.Date(solar_data$date)
 
@@ -50,27 +42,21 @@ ts_sunspot_test <- ts(test$sunspot, start = c(test_start_yr, test_start_mo), fre
 ts_f107_test    <- ts(test$f107,    start = c(test_start_yr, test_start_mo), frequency = 12)
 ts_ap_test      <- ts(test$ap,      start = c(test_start_yr, test_start_mo), frequency = 12)
 
-# ============================================================
-# FUNCTION: full univariate analysis for one series
-# ============================================================
+
 univariate_analysis <- function(ts_train, ts_test, series_name) {
 
   cat("\n", rep("=", 60), "\n", sep = "")
   cat("SERIES:", series_name, "\n")
   cat(rep("=", 60), "\n", sep = "")
 
-  # ----------------------------------------------------------
-  # 1. Time series plot
-  # ----------------------------------------------------------
+
   png(paste0("output/", series_name, "_tsplot.png"), width = 900, height = 400)
   plot(ts_train, main = paste(series_name, "- Training Set"),
        ylab = series_name, xlab = "Year", col = "steelblue", lwd = 1.2)
   dev.off()
   cat(">> Time series plot saved\n")
 
-  # ----------------------------------------------------------
-  # 2. ACF and PACF plots
-  # ----------------------------------------------------------
+ 
   png(paste0("output/", series_name, "_acf_pacf.png"), width = 900, height = 500)
   par(mfrow = c(1, 2))
   acf(ts_train,  main = paste("ACF -",  series_name), lag.max = 48, na.action = na.pass)
@@ -78,9 +64,7 @@ univariate_analysis <- function(ts_train, ts_test, series_name) {
   dev.off()
   cat(">> ACF/PACF plot saved\n")
 
-  # ----------------------------------------------------------
-  # 3. Stationarity tests
-  # ----------------------------------------------------------
+  
   cat("\n--- Stationarity Tests ---\n")
 
   # ADF test (null: non-stationary)
@@ -93,18 +77,14 @@ univariate_analysis <- function(ts_train, ts_test, series_name) {
   cat("KPSS Test p-value:", round(kpss_result$p.value, 4),
       "->", ifelse(kpss_result$p.value > 0.05, "STATIONARY", "NON-STATIONARY"), "\n")
 
-  # ----------------------------------------------------------
-  # 4. auto.arima to find best model
-  # ----------------------------------------------------------
+ 
   cat("\n--- auto.arima ---\n")
   auto_model <- auto.arima(ts_train, seasonal = TRUE, stepwise = FALSE,
                            approximation = FALSE, ic = "aic")
   cat("Best model from auto.arima:\n")
   print(summary(auto_model))
 
-  # ----------------------------------------------------------
-  # 5. Compare candidate models by AIC
-  # ----------------------------------------------------------
+  
   cat("\n--- Candidate Model AIC Comparison ---\n")
 
   candidates <- list(
@@ -130,18 +110,14 @@ univariate_analysis <- function(ts_train, ts_test, series_name) {
   dev.off()
   cat("\n>> Residual diagnostics plot saved\n")
 
-  # ----------------------------------------------------------
-  # 7. Print fitted model equation
-  # ----------------------------------------------------------
+  
   cat("\n--- Final Model ---\n")
   cat("Model:", as.character(final_model), "\n")
   cat("AIC:", round(AIC(final_model), 2), "\n")
   cat("Coefficients:\n")
   print(coef(final_model))
 
-  # ----------------------------------------------------------
-  # 8. Forecasts for test set
-  # ----------------------------------------------------------
+  
   h <- length(ts_test)
   fc <- forecast(final_model, h = h)
 
@@ -155,9 +131,7 @@ univariate_analysis <- function(ts_train, ts_test, series_name) {
   dev.off()
   cat(">> Forecast plot saved\n")
 
-  # ----------------------------------------------------------
-  # 9. Accuracy measures
-  # ----------------------------------------------------------
+  
   cat("\n--- Accuracy: Test Set (Forecast vs Actual) ---\n")
   acc_test <- accuracy(fc, ts_test)
   print(round(acc_test, 4))
@@ -169,9 +143,7 @@ univariate_analysis <- function(ts_train, ts_test, series_name) {
   return(final_model)
 }
 
-# ============================================================
-# Run analysis for all three series
-# ============================================================
+
 model_sunspot <- univariate_analysis(ts_sunspot, ts_sunspot_test, "Sunspot")
 model_f107    <- univariate_analysis(ts_f107,    ts_f107_test,    "F107")
 model_ap      <- univariate_analysis(ts_ap,      ts_ap_test,      "Ap_Index")
