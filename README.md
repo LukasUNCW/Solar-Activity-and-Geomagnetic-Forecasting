@@ -1,6 +1,6 @@
 # Solar Activity & Geomagnetic Forecasting - STT 592
 
-This project analyzes and forecasts three interrelated space weather time series using monthly data sourced from NOAA. We fit and compare three modeling approaches to evaluate which best captures the dynamics of solar activity and its effect on Earth's geomagnetic field.
+This project analyzes and forecasts three interrelated space weather time series using monthly data sourced from NOAA. I fit and compare three modeling approaches to evaluate which best captures the dynamics of solar activity and its effect on Earth's geomagnetic field.
 
 ## Background: The Solar Cycle
 The sun is not constant, it goes through a repeating cycle of activity roughly every 11 years, swinging between periods of relative calm (solar minimum) and intense activity (solar maximum). During solar maximum, the Sun's magnetic fields becomes highly tangled and unstable, producing more sunspots, solar flares, and bursts of energy. During solar minimum, the surface is quieter and sunspot counts drop close to zero. 
