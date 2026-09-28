@@ -4,9 +4,10 @@
 
 ## Data Overview
 
-The training set consists of 659 monthly observations spanning January 1964 to November
-2018. The test set consists of 73 monthly observations spanning December 2018 to December
-2024. Each series was modeled independently using ARIMA or SARIMA.
+The training set consists of 657 monthly observations spanning January 1964 to September
+2018. The test set consists of 73 monthly observations spanning October 2018 to October
+2024. (F10.7 is missing for November–December 2024, so those two months are dropped from
+all three analyses to keep the train/test split identical across methods.) Each series was modeled independently using ARIMA or SARIMA.
 
 ---
 
@@ -37,8 +38,8 @@ bounds. This pattern suggests an AR(2) process may be appropriate after differen
 
 | Test | p-value | Conclusion |
 |---|---|---|
-| ADF | 0.3263 | Non-stationary (fail to reject H0) |
-| KPSS | 0.0143 | Non-stationary (reject H0) |
+| ADF | 0.3276 | Non-stationary (fail to reject H0) |
+| KPSS | 0.0164 | Non-stationary (reject H0) |
 
 Both tests agree that the Sunspot series is non-stationary, consistent with the visual
 inspection. First differencing is required before fitting an ARIMA model.
@@ -47,14 +48,14 @@ inspection. First differencing is required before fitting an ARIMA model.
 
 | Model | AIC |
 |---|---|
-| ARIMA(2,1,2) — auto.arima | **5991.91** |
-| ARIMA(2,1,1) | 6007.57 |
-| ARIMA(1,1,1) | 6009.80 |
-| ARIMA(0,1,1) | 6016.08 |
-| ARIMA(1,1,0) | 6057.51 |
-| ARIMA(0,1,0) | 6114.76 |
+| ARIMA(2,1,2) — auto.arima | **5975.72** |
+| ARIMA(2,1,1) | 5991.33 |
+| ARIMA(1,1,1) | 5993.55 |
+| ARIMA(0,1,1) | 5999.81 |
+| ARIMA(1,1,0) | 6041.11 |
+| ARIMA(0,1,0) | 6098.18 |
 
-The ARIMA(2,1,2) model selected by `auto.arima` produced the lowest AIC of 5991.91,
+The ARIMA(2,1,2) model selected by `auto.arima` produced the lowest AIC of 5975.72,
 outperforming all candidate models. This model includes one degree of differencing to
 achieve stationarity, along with AR(2) and MA(2) terms to capture the short-term
 autocorrelation structure.
@@ -63,12 +64,12 @@ autocorrelation structure.
 
 **ARIMA(2,1,2)**
 
-$$\hat{y}_t = 1.2534 y_{t-1} - 0.3085 y_{t-2} - 1.6985 \varepsilon_{t-1} + 0.7446 \varepsilon_{t-2}$$
+$$\hat{y}_t = 1.2534 y_{t-1} - 0.3085 y_{t-2} - 1.6987 \varepsilon_{t-1} + 0.7448 \varepsilon_{t-2}$$
 
-- AIC: 5991.91
-- σ² = 522.4
+- AIC: 5975.72
+- σ² = 524.0
 
-The Ljung-Box test on the residuals returned a p-value of 0.3036, indicating no significant
+The Ljung-Box test on the residuals returned a p-value of 0.3066, indicating no significant
 autocorrelation remaining in the residuals. The residual plot shows approximately white noise
 behavior, confirming the model adequately captures the structure in the data.
 
@@ -82,8 +83,8 @@ behavior, confirming the model adequately captures the structure in the data.
 
 | Set | RMSE | MAE | MAPE |
 |---|---|---|---|
-| Training | 22.77 | 16.47 | — |
-| Test | 91.37 | 67.56 | 104.13% |
+| Training | 22.80 | 16.52 | — |
+| Test | 88.39 | 64.15 | 121.21% |
 
 The high MAPE on the test set is largely a result of near-zero sunspot values during solar
 minimum — small absolute errors become very large percentage errors when the denominator
@@ -98,8 +99,8 @@ approaches zero. RMSE and MAE are more informative here.
 ![F10.7 Time Series](../output/F107_tsplot.png)
 
 The F10.7 Solar Flux series closely mirrors the Sunspot Number, exhibiting the same 11-year
-cyclical pattern. Values range from approximately 700 sfu at solar minimum to over 2400 sfu
-at solar maximum. The series is non-stationary with a strong periodic structure. The cycles
+cyclical pattern. Values range from approximately 70 sfu at solar minimum to over 240 sfu
+at solar maximum (the PSL file stores F10.7 in units of 0.1 sfu, so raw values run 700–2400). The series is non-stationary with a strong periodic structure. The cycles
 follow the same timing as sunspots, which is expected given the physical relationship between
 these two measures of solar activity.
 
@@ -117,35 +118,37 @@ differencing.
 
 | Test | p-value | Conclusion |
 |---|---|---|
-| ADF | 0.3513 | Non-stationary (fail to reject H0) |
-| KPSS | 0.0468 | Non-stationary (reject H0) |
+| ADF | 0.3533 | Non-stationary (fail to reject H0) |
+| KPSS | 0.0512 | Borderline (fail to reject H0 at 5%) |
 
-Both tests confirm non-stationarity, consistent with the visual inspection and ACF behavior.
+The ADF test indicates non-stationarity, while the KPSS test sits right at the 5% boundary.
+Given the visual inspection and the very slow ACF decay, the series is treated as non-stationary
+and differenced once.
 
 ### Candidate Model Comparison
 
 | Model | AIC |
 |---|---|
-| ARIMA(2,1,2) — auto.arima | **8360.42** |
-| ARIMA(1,1,1) | 8371.91 |
-| ARIMA(2,1,1) | 8372.91 |
-| ARIMA(0,1,1) | 8383.20 |
-| ARIMA(1,1,0) | 8392.31 |
-| ARIMA(0,1,0) | 8412.66 |
+| ARIMA(2,1,2) — auto.arima | **8337.00** |
+| ARIMA(1,1,1) | 8348.47 |
+| ARIMA(2,1,1) | 8349.47 |
+| ARIMA(0,1,1) | 8359.73 |
+| ARIMA(1,1,0) | 8368.81 |
+| ARIMA(0,1,0) | 8389.09 |
 
-The ARIMA(2,1,2) model again produced the lowest AIC of 8360.42, consistent with the
+The ARIMA(2,1,2) model again produced the lowest AIC of 8337.00, consistent with the
 similar autocorrelation structure of F10.7 and Sunspot Number.
 
 ### Final Model
 
 **ARIMA(2,1,2)**
 
-$$\hat{y}_t = 1.5383 y_{t-1} - 0.7126 y_{t-2} - 1.7498 \varepsilon_{t-1} + 0.8801 \varepsilon_{t-2}$$
+$$\hat{y}_t = 1.5387 y_{t-1} - 0.7131 y_{t-2} - 1.7500 \varepsilon_{t-1} + 0.8805 \varepsilon_{t-2}$$
 
-- AIC: 8360.42
-- σ² = 19,110
+- AIC: 8337.00
+- σ² = 19,168
 
-The Ljung-Box test returned a p-value of 0.0313, which is below 0.05, suggesting some
+The Ljung-Box test returned a p-value of 0.0317, which is below 0.05, suggesting some
 remaining autocorrelation in the residuals. This indicates the model does not fully capture
 all structure in the F10.7 series, likely due to the long solar cycle period being difficult
 to model with a simple ARIMA structure.
@@ -160,12 +163,12 @@ to model with a simple ARIMA structure.
 
 | Set | RMSE | MAE | MAPE |
 |---|---|---|---|
-| Training | 137.71 | 94.89 | 7.29% |
-| Test | 647.65 | 456.78 | 30.58% |
+| Training | 137.92 | 95.14 | 7.31% |
+| Test | 654.68 | 465.05 | 31.79% |
 
 The test set errors are substantially larger than the training errors, indicating the univariate
 model struggles to forecast F10.7 over the 73-month test horizon. The Theil's U statistic
-of 4.68 confirms the model performs worse than a naive forecast over the test period.
+of 4.84 confirms the model performs worse than a naive forecast over the test period.
 
 ---
 
@@ -210,12 +213,12 @@ no clear trend but exhibits long-period oscillations driven by the solar cycle. 
 
 | Model | AIC |
 |---|---|
-| ARIMA(1,1,2)(2,0,0)[12] — auto.arima | **3830.16** |
-| ARIMA(1,1,1) | 3843.33 |
-| ARIMA(2,1,1) | 3845.00 |
-| ARIMA(0,1,1) | 3870.02 |
-| ARIMA(1,1,0) | 3956.52 |
-| ARIMA(0,1,0) | 4042.78 |
+| ARIMA(1,1,2)(2,0,0)[12] — auto.arima | **3820.10** |
+| ARIMA(1,1,1) | 3833.27 |
+| ARIMA(2,1,1) | 3834.91 |
+| ARIMA(0,1,1) | 3860.02 |
+| ARIMA(1,1,0) | 3946.08 |
+| ARIMA(0,1,0) | 4032.17 |
 
 `auto.arima` selected a seasonal ARIMA model — ARIMA(1,1,2)(2,0,0)[12] — which
 outperformed all non-seasonal candidates by a significant margin. This confirms the presence
@@ -226,12 +229,12 @@ capture.
 
 **ARIMA(1,1,2)(2,0,0)[12]**
 
-$$\hat{y}_t = 0.8325 y_{t-1} - 1.4700 \varepsilon_{t-1} + 0.4783 \varepsilon_{t-2} + 0.1217 y_{t-12} + 0.1351 y_{t-24}$$
+$$\hat{y}_t = 0.8319 y_{t-1} - 1.4695 \varepsilon_{t-1} + 0.4778 \varepsilon_{t-2} + 0.1211 y_{t-12} + 0.1356 y_{t-24}$$
 
-- AIC: 3830.16
-- σ² = 19.48
+- AIC: 3820.10
+- σ² = 19.53
 
-The Ljung-Box test returned a p-value of 0.0038, indicating some remaining autocorrelation
+The Ljung-Box test returned a p-value of 0.0036, indicating some remaining autocorrelation
 in the residuals. Despite this, the model provides a reasonable fit and its AIC is
 substantially lower than all non-seasonal alternatives.
 
@@ -245,11 +248,11 @@ substantially lower than all non-seasonal alternatives.
 
 | Set | RMSE | MAE | MAPE |
 |---|---|---|---|
-| Training | 4.39 | 3.16 | 26.63% |
-| Test | 3.54 | 2.66 | 37.02% |
+| Training | 4.40 | 3.17 | 26.62% |
+| Test | 3.65 | 2.84 | 41.43% |
 
-Notably, the test set RMSE (3.54) is slightly lower than the training RMSE (4.39), suggesting
-the model generalizes well to the test period. The Theil's U of 1.18 indicates performance
+Notably, the test set RMSE (3.65) is slightly lower than the training RMSE (4.40), suggesting
+the model generalizes well to the test period. The Theil's U of 1.28 indicates performance
 slightly worse than a naive forecast, which is reasonable given the inherent unpredictability
 of geomagnetic activity.
 
@@ -318,10 +321,10 @@ in the actual test series.
 | F10.7 | 421.58 | 298.66 | 21.72% |
 | Ap Index | 4.17 | 3.52 | 57.65% |
 
-The VAR model outperforms the univariate model for both Sunspot (RMSE 48.48 vs 91.37)
-and F10.7 (RMSE 421.58 vs 647.65), suggesting that cross-series information improves
+The VAR model outperforms the univariate model for both Sunspot (RMSE 48.48 vs 88.39)
+and F10.7 (RMSE 421.58 vs 654.68), suggesting that cross-series information improves
 forecasting for the solar activity variables. For the Ap Index, the VAR model performs
-slightly worse than the univariate model (RMSE 4.17 vs 3.54), indicating that the added
+slightly worse than the univariate model (RMSE 4.17 vs 3.65), indicating that the added
 complexity of the vector model does not benefit Ap forecasting as much as modeling it
 individually or with a dynamic regression approach.
 
@@ -351,7 +354,8 @@ the two covariates included. The best model selected by `auto.arima` was:
 
 - AIC: 3805.45
 
-This model improves on the univariate Ap ARIMA model (AIC: 3830.16) by 24.71 AIC points,
+This model improves on the univariate Ap ARIMA model (AIC: 3820.10, fitted on the same 657
+observations) by 14.65 AIC points,
 confirming that the solar activity covariates provide meaningful additional explanatory power
 beyond what the ARIMA error structure alone can capture.
 
@@ -385,7 +389,9 @@ well, with the actual Ap values mostly falling within or near the prediction int
 The model correctly captures the modest increase in geomagnetic activity during Solar
 Cycle 25, driven by the rising Sunspot and F10.7 values provided as covariates in the
 test set. This is a key advantage of dynamic regression — the model can leverage the
-known covariate values to produce more informed forecasts.
+known covariate values to produce more informed forecasts. Note that this makes it a
+*conditional* forecast: it uses the observed test-period sunspot and F10.7 values, which
+would not be known in advance in a true out-of-sample setting.
 
 ## 3.5 Accuracy Measures
 
@@ -393,7 +399,7 @@ known covariate values to produce more informed forecasts.
 
 | Set | RMSE | MAE | MAPE |
 |---|---|---|---|
-| Test | 3.29 | 2.72 | 43.44% |
+| Test | 3.15 | 2.50 | 40.10% |
 
 ### Train Set Accuracy
 
@@ -401,8 +407,8 @@ known covariate values to produce more informed forecasts.
 |---|---|---|---|
 | Training | 4.34 | 3.12 | 26.40% |
 
-The dynamic regression model achieves the lowest test RMSE (3.29) of all three methods
-applied to the Ap Index, outperforming both the univariate ARIMA (RMSE 3.54) and the
+The dynamic regression model achieves the lowest test RMSE (3.15) of all three methods
+applied to the Ap Index, outperforming both the univariate ARIMA (RMSE 3.65) and the
 VAR model (RMSE 4.17). The training RMSE of 4.34 is also the lowest among methods for
 this series, confirming that the covariates improve both in-sample fit and out-of-sample
 forecasting for the Ap Index.
@@ -414,7 +420,7 @@ forecasting for the Ap Index.
 ## 4.1 Forecasting Accuracy (Test Set)
 
 The table below summarizes the forecasting accuracy for each method on the held-out test set
-(December 2018 – December 2024, 73 observations).
+(October 2018 – October 2024, 73 observations).
 
 | Method | Series | RMSE | MAE | MAPE |
 |---|---|---|---|---|
@@ -424,7 +430,7 @@ The table below summarizes the forecasting accuracy for each method on the held-
 | Vector ARIMA (VAR) | Sunspot | 48.48 | 37.95 | 1020.11% |
 | Vector ARIMA (VAR) | F10.7 | 421.58 | 298.66 | 21.72% |
 | Vector ARIMA (VAR) | Ap Index | 4.17 | 3.52 | 57.65% |
-| Dynamic Regression | Ap Index | 3.29 | 2.72 | 43.44% |
+| Dynamic Regression | Ap Index | 3.15 | 2.50 | 40.10% |
 
 ## 4.2 In-Sample Fit Accuracy (Train Set)
 
@@ -455,7 +461,7 @@ information improved forecasting. The MAPE of 21.72% for VAR vs 31.79% for univa
 further supports this conclusion.
 
 For **Ap Index**, the Dynamic Regression model produced the best forecasts, with the lowest
-RMSE (3.29) and MAE (2.72) among all methods tested for this series. This is not surprising
+RMSE (3.15) and MAE (2.50) among all methods tested for this series. This is not surprising
 given the physical relationship between the variables — Sunspot Number and F10.7 are direct
 measures of solar output and are strong predictors of geomagnetic activity. By explicitly
 incorporating these as covariates, the dynamic regression model was able to leverage this
