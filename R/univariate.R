@@ -1,5 +1,3 @@
-.libPaths('~/R/library')
-
 library(tidyr)
 library(dplyr)
 library(forecast)
@@ -12,6 +10,10 @@ dir.create("output", showWarnings = FALSE)
 
 solar_data <- read.csv("data/solar_data_clean.csv")
 solar_data$date <- as.Date(solar_data$date)
+
+# Remove rows with any NA (F10.7 is missing for Nov-Dec 2024) so the
+# train/test split matches varima.R and dynamicregression.R exactly
+solar_data <- na.omit(solar_data)
 
 # Split train/test (last 10% = test)
 n       <- nrow(solar_data)
@@ -132,6 +134,12 @@ univariate_analysis <- function(ts_train, ts_test, series_name) {
   cat(">> Forecast plot saved\n")
 
   
+  # save forecasts for R/figures.R
+  write.csv(data.frame(date = test$date, series = series_name, method = "ARIMA",
+                       actual = as.numeric(ts_test), mean = as.numeric(fc$mean),
+                       lo95 = as.numeric(fc$lower[, "95%"]), hi95 = as.numeric(fc$upper[, "95%"])),
+            paste0("output/forecast_arima_", series_name, ".csv"), row.names = FALSE)
+
   cat("\n--- Accuracy: Test Set (Forecast vs Actual) ---\n")
   acc_test <- accuracy(fc, ts_test)
   print(round(acc_test, 4))
