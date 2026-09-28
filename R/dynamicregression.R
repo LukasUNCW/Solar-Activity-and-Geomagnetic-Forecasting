@@ -1,5 +1,3 @@
-.libPaths('~/R/library')
-
 library(tidyr)
 library(dplyr)
 library(forecast)
@@ -102,6 +100,12 @@ cat("\n>> Residual diagnostics plot saved\n")
 cat("\n--- Forecasting Ap Index using test set covariates ---\n")
 
 fc <- forecast(final_model, xreg = xreg_test, h = nrow(test))
+
+# save forecasts for R/figures.R
+write.csv(data.frame(date = test$date, series = "Ap_Index", method = "Dynamic regression",
+                     actual = test$ap, mean = as.numeric(fc$mean),
+                     lo95 = as.numeric(fc$lower[, "95%"]), hi95 = as.numeric(fc$upper[, "95%"])),
+          "output/forecast_dynreg.csv", row.names = FALSE)
 
 
 all_dates   <- solar_data$date

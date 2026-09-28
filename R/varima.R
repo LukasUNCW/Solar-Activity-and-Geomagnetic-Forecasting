@@ -1,5 +1,3 @@
-.libPaths('~/R/library')
-
 library(tidyr)
 library(dplyr)
 library(MTS)
@@ -88,6 +86,13 @@ fc <- VARpred(best_model, h = h)
 fc_sunspot <- fc$pred[, 1]
 fc_f107    <- fc$pred[, 2]
 fc_ap      <- fc$pred[, 3]
+
+# save forecasts for R/figures.R
+write.csv(rbind(
+  data.frame(date = test$date, series = "Sunspot",  method = "VAR", actual = test$sunspot, mean = fc_sunspot),
+  data.frame(date = test$date, series = "F107",     method = "VAR", actual = test$f107,    mean = fc_f107),
+  data.frame(date = test$date, series = "Ap_Index", method = "VAR", actual = test$ap,      mean = fc_ap)),
+  "output/forecast_var.csv", row.names = FALSE)
 
            
 all_dates   <- solar_data$date
